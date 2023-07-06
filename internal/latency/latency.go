@@ -4,15 +4,20 @@ import (
 	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
+	"os"
 	"time"
 )
 
-var ctx = context.Background()
+func TestLatency(ctx context.Context) {
+	redisAdd := ""
+	if len(os.Args) > 1 {
+		redisAdd = os.Args[1]
+	} else {
+		redisAdd = "localhost:6379"
+	}
 
-func TestLatency() {
 	rdb := redis.NewClient(&redis.Options{
-		//Addr: "redis01.twin24.loc:6379",
-		Addr:     "localhost:6379",
+		Addr:     redisAdd,
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})

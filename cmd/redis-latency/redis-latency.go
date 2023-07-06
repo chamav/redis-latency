@@ -1,7 +1,14 @@
 package main
 
-import "redis-latency/internal/latency"
+import (
+	"context"
+	"os/signal"
+	"redis-latency/internal/latency"
+	"syscall"
+)
 
 func main() {
-	latency.TestLatency()
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
+	latency.TestLatency(ctx)
 }
