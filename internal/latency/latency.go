@@ -17,7 +17,7 @@ func TestLatency() {
 		DB:       0,  // use default DB
 	})
 	now := time.Now()
-	_, err := rdb.Ping(context.Background()).Result()
+	_, err := rdb.Ping(ctx).Result()
 	elapsed := time.Since(now)
 	if err != nil {
 		fmt.Println("Error: ", err)
