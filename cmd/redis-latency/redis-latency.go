@@ -1,14 +1,16 @@
 package main
 
 import (
-	"context"
-	"os/signal"
+	"log"
+	"net/http"
 	"redis-latency/internal/latency"
-	"syscall"
 )
 
 func main() {
-	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-	defer cancel()
-	latency.TestLatency(ctx)
+	http.HandleFunc("/", latency.TestLatency)
+	err := http.ListenAndServe(":8085", nil)
+
+	if err != nil {
+		log.Fatal("ListenAndServe: ", err)
+	}
 }

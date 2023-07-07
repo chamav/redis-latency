@@ -1,23 +1,22 @@
 package latency
 
 import (
-	"context"
 	"fmt"
 	"github.com/redis/go-redis/v9"
-	"os"
+	"net/http"
 	"time"
 )
 
-func TestLatency(ctx context.Context) {
-	redisAdd := ""
-	if len(os.Args) > 1 {
-		redisAdd = os.Args[1]
-	} else {
-		redisAdd = "localhost:6379"
+func TestLatency(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	redisAddress := r.URL.Query().Get("url")
+	if redisAddress == "" {
+		redisAddress = "localhost:6379"
 	}
 
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     redisAdd,
+		Addr:     redisAddress,
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
@@ -25,9 +24,9 @@ func TestLatency(ctx context.Context) {
 	_, err := rdb.Ping(ctx).Result()
 	elapsed := time.Since(now)
 	if err != nil {
-		fmt.Println("Error: ", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, err.Error())
+		return
 	}
-	//fmt.Println("Ping latency: ", float64(elapsed.Microseconds()))
-	fmt.Println(float64(elapsed.Microseconds()))
-
+	fmt.Fprintf(w, fmt.Sprintf("%.0f", float64(elapsed.Microseconds())))
 }
