@@ -33,8 +33,6 @@ func TestLatency(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, err.Error())
 		return
 	}
-	fmt.Fprint(w, "redis_latency ")
-	fmt.Fprintf(w, fmt.Sprintf("%.0f", float64(elapsed.Microseconds())))
-	fmt.Fprint(w, " ")
-	fmt.Fprint(w, strconv.FormatInt(now.Unix(), 10))
+	//Prometheus format
+	fmt.Fprintln(w, "redis_latency", float64(elapsed.Microseconds()), strconv.FormatInt(now.Unix(), 10))
 }
