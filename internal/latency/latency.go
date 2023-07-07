@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-var clients map[string]*redis.Client
+var clients = make(map[string]*redis.Client)
 
 func TestLatency(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -17,18 +17,16 @@ func TestLatency(w http.ResponseWriter, r *http.Request) {
 	if redisAddress == "" {
 		redisAddress = "localhost:6379"
 	}
-	rdb, ok := clients[redisAddress]
-	// If the key exists
+	_, ok := clients[redisAddress]
 	if ok == false {
-		rdb := redis.NewClient(&redis.Options{
+		clients[redisAddress] = redis.NewClient(&redis.Options{
 			Addr:     redisAddress,
 			Password: "", // no password set
 			DB:       0,  // use default DB
 		})
-		clients[redisAddress] = rdb
 	}
 	now := time.Now()
-	_, err := rdb.Ping(ctx).Result()
+	_, err := clients[redisAddress].Ping(ctx).Result()
 	elapsed := time.Since(now)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
