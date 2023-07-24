@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/redis/go-redis/v9"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -34,5 +33,6 @@ func TestLatency(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	//Prometheus format
-	fmt.Fprintln(w, "redis_latency", float64(elapsed.Microseconds()), strconv.FormatInt(now.Unix(), 10))
+	//fmt.Fprintln(w, "redis_latency", float64(elapsed.Microseconds()), strconv.FormatInt(now.Unix(), 10))
+	fmt.Fprintln(w, "redis_latency", float64(elapsed.Microseconds()))
 }
